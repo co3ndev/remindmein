@@ -1,0 +1,4 @@
+Todo: 
+- Add logic to make persistent notifications, only disappearing if clicked off
+- Add logic to continue current terminal session while RemindMe function runs in the background
+- Add logic to auto-check for updates / enable/disable auto-update
