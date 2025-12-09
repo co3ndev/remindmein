@@ -21,14 +21,14 @@ void remindAtTime(int hour, int minute, const std::string& message) {
             system(("notify-send 'Reminder' '" + message + "'").c_str());
             break;
         }
-        std::this_thread::sleep_for(std::chrono::seconds(10));
+        std::this_thread::sleep_for(std::chrono::seconds(1));
     }
 }
 
-void remindCountdown(int seconds, const std::string& message) {
-    std::cout << "Countdown reminder set for " << seconds << " seconds - " 
+void remindCountdown(int minutes, const std::string& message) {
+    std::cout << "Countdown reminder set for " << minutes << " minutes - " 
               << message << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(seconds*60));
+    system(("sleep " + std::to_string(minutes) + " &").c_str());
     std::cout << "\n🔔 REMINDER: " << message << std::endl;
     system(("notify-send 'Reminder' '" + message + "'").c_str());
 }
