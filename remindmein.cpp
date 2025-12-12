@@ -5,33 +5,40 @@
 #include <thread>
 #include <iomanip>
 #include <cstdlib>
+#include <thread>
 
 void remindAtTime(int hour, int minute, const std::string& message) {
     std::cout << "Reminder set for " << std::setfill('0') 
               << std::setw(2) << hour << ":" 
               << std::setw(2) << minute << " - " << message << std::endl;
     
-    while (true) {
-        auto now = std::chrono::system_clock::now();
-        auto time = std::chrono::system_clock::to_time_t(now);
-        auto tm = *std::localtime(&time);
-        
-        if (tm.tm_hour == hour && tm.tm_min == minute) {
-            std::cout << "\n🔔 REMINDER: " << message << std::endl;
-            system(("notify-send 'Reminder' '" + message + "'").c_str());
-            break;
+    std::thread([hour, minute, message]() {
+        while (true) {
+            auto now = std::chrono::system_clock::now();
+            auto time = std::chrono::system_clock::to_time_t(now);
+            auto tm = *std::localtime(&time);
+            
+            if (tm.tm_hour == hour && tm.tm_min == minute) {
+                std::cout << "\n🔔 REMINDER: " << message << std::endl;
+                system(("notify-send -u critical 'Reminder' '" + message + "'").c_str());
+                break;
+            }
+            std::this_thread::sleep_for(std::chrono::seconds(1));
         }
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
+    }).detach();
 }
 
 void remindCountdown(int minutes, const std::string& message) {
     std::cout << "Countdown reminder set for " << minutes << " minutes - " 
               << message << std::endl;
-    system(("sleep " + std::to_string(minutes) + " &").c_str());
-    std::cout << "\n🔔 REMINDER: " << message << std::endl;
-    system(("notify-send 'Reminder' '" + message + "'").c_str());
+    
+    std::thread([minutes, message]() {
+        std::this_thread::sleep_for(std::chrono::minutes(minutes));
+        std::cout << "\n🔔 REMINDER: " << message << std::endl;
+        system(("notify-send -u critical 'Reminder' '" + message + "'").c_str());
+    }).detach();
 }
+
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
